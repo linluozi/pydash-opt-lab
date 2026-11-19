@@ -26,8 +26,11 @@ Median of the three scale speedups: **3.23x**. Raw samples (7 timed runs + 3 war
 are in `benchmark/raw/`; aggregates in `benchmark/baseline.json` / `benchmark/optimized.json`.
 
 **G3b (real corpus) is the same number**: the benchmark corpus is real API data, so the 3.23x
-median is not a synthetic-load projection. A separate micro-check attributed the win: `to_path`
-was ~72% of `get()` time in the baseline loop (4000 parses = 28 ms vs 125 ms total).
+median is not a synthetic-load projection. Attribution comes from the same paired run: at the
+large scale, path parsing + token construction that the patch removes accounts for
+(24.790 − 8.110) / 24.790 = **67.3%** of baseline `get()` time; a separate direct call of
+`to_path` measured ~7.0 µs against ~16.7 µs per baseline `get()` (~42%), the rest being the
+`PathToken`/list-comp overhead that only shows up inside `get()`.
 
 Relative standard deviation is high on the optimized side (88–98% at small/medium) because
 samples are sub-millisecond and dominated by `perf_counter` granularity plus GC; medians and
