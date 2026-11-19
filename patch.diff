@@ -1,0 +1,41 @@
+diff --git a/src/pydash/utilities.py b/src/pydash/utilities.py
+index 57381b5..f059f00 100644
+--- a/src/pydash/utilities.py
++++ b/src/pydash/utilities.py
+@@ -9,7 +9,7 @@ from __future__ import annotations
+ from collections import namedtuple
+ from collections.abc import Iterator
+ from datetime import datetime, timezone
+-from functools import partial, wraps
++from functools import lru_cache, partial, wraps
+ from itertools import tee
+ import math
+ import random as _random
+@@ -1427,6 +1427,12 @@ def times(n: int, iteratee=None):
+     return [callit(iteratee, index, argcount=argcount) for index in range(n)]
+ 
+ 
++@lru_cache(maxsize=4096)
++def _to_path_keys_cached(value: str) -> t.Tuple[t.Hashable, ...]:
++    """Parse a string path once; callers still get a fresh list (see ``to_path``)."""
++    return tuple(token.key for token in to_path_tokens(value))
++
++
+ def to_path(value: PathT) -> t.List[t.Hashable]:
+     """
+     Converts values to a property path array.
+@@ -1451,8 +1457,12 @@ def to_path(value: PathT) -> t.List[t.Hashable]:
+     .. versionchanged:: 4.2.1
+         Ensure returned path is always a list.
+     """
+-    path = [token.key for token in to_path_tokens(value)]
+-    return path
++    if isinstance(value, str):
++        # Parsing a path string is pure and is repeated for every lookup in loops over records
++        # (e.g. ``for row in rows: get(row, "a.b.c")``). Cache the immutable key tuple, but keep
++        # returning a fresh list so callers can still mutate the result.
++        return list(_to_path_keys_cached(value))
++    return [token.key for token in to_path_tokens(value)]
+ 
+ 
+ def unique_id(prefix: t.Union[str, None] = None) -> str:

@@ -1,0 +1,1 @@
+{"duration_s": 0.02537180297076702, "gets": 2500, "hits": 1000, "i": 5, "impl": "baseline-mem", "pydash": "8.1.0", "python": "3.12.3", "records": 500, "result_sha256": "55949de59b16a3f64ce5b23db48b4c7b466b6f954aa46d914b8ecb5f854d72cd", "scale": "large", "seed": 20261119}

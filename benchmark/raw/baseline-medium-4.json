@@ -1,0 +1,1 @@
+{"duration_s": 0.0320035507902503, "gets": 1000, "hits": 400, "i": 4, "impl": "baseline", "pydash": "8.1.0", "python": "3.12.3", "records": 200, "result_sha256": "596dc4973556821d9703d488176ec5496c72ec7eff75566d40ebf9127d19500e", "scale": "medium", "seed": 20261119}
